@@ -1,0 +1,140 @@
+<head>
+	<include file='public:head'>
+</head>
+<div class="row">
+    <div class="col-md-12">
+        <div class="ibox float-e-margins">
+            <!--条件查询-->
+            <div class="ibox-title">
+                <h5>资金变动日志</h5>
+                <div class="ibox-tools">
+                    <i class="layui-icon" onclick="location.replace(location.href);" title="刷新"
+                       style="cursor:pointer;">ဂ</i>
+                </div>
+            </div>
+            <!--条件查询-->
+            <div class="ibox-content">
+                <form class="layui-form" action="" method="get" autocomplete="off" id="orderform">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input type="text" name="agent_phone" autocomplete="off" placeholder="请输入会员手机号码"
+                                       class="layui-input" value="{$Request.param.agent_phone}">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="user_phone" autocomplete="off" placeholder="请输入接收方手机号码"
+                                       class="layui-input" value="{$Request.param.user_phone}">
+                            </div>
+                            <div class="layui-input-inline">
+                                <select name="change_type">
+                                    <option value="">变动类型</option>
+                                    <option <if condition="$Request.param.change_type eq 1">selected</if>
+                                    value="1">系统增加</option>
+                                    <option <if condition="$Request.param.change_type eq 2">selected</if>
+                                    value="2">系统减少</option>
+                                    <option <if condition="$Request.param.change_type eq 3">selected</if>
+                                    value="3">赠送</option>
+                                    <option <if condition="$Request.param.change_type eq 4">selected</if>
+                                    value="4">消费</option>
+                                    <option <if condition="$Request.param.change_type eq 5">selected</if>
+                                    value="5">被赠送</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="createtime" id="createtime"
+                                       placeholder="起始时间" value="{$Request.param.createtime|urldecode}">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn"><span
+                                    class="glyphicon glyphicon-search"></span> 搜索
+                            </button>
+                            <a href="javascript:;" id="export" class="layui-btn layui-btn-danger"><span class="glyphicon glyphicon-export"></span> 导出数据</a>
+                        </div>
+                    </div>
+                </form>
+
+                <!--日志列表-->
+                <table class="layui-table" lay-data="{width:'100%',id:'userData'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'key',width:50}"></th>
+                        <th lay-data="{field:'edit_username', width:120,style:'color:#060;'}">会员昵称</th>
+                        <th lay-data="{field:'edit_userphone', width:150,style:'color:#060;'}">会员手机号码</th>
+                        <th lay-data="{field:'username', width:120,style:'color:#060;'}">接收方昵称</th>
+                        <th lay-data="{field:'userphone', width:150,style:'color:#060;'}">接收方手机号码</th>
+                        <th lay-data="{field:'change_type', width:120}">变动类型</th>
+                        <th lay-data="{field:'before_balance', width:120}">变动前金豆</th>
+                        <th lay-data="{field:'change_balance', width:120}">变动金豆</th>
+                        <th lay-data="{field:'after_balance', width:120}">变动后金豆</th>
+                        <th lay-data="{field:'created_time', width:150}">操作时间</th>
+                        <th lay-data="{field:'contentstr', width:120}">备注</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="list" id="vo">
+                        <tr>
+                            <td>{$vo.id}</td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.agentid|getagentname=###}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.agentid|getagentphone=###}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.to_userid|getusername=###}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.to_userid|getuserphone=###}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                <switch name="vo.change_type">
+                                    <case value="1">系统增加</case>
+                                    <case value="2">系统减少</case>
+                                    <case value="3">赠送</case>
+                                    <case value="4">消费</case>
+                                    <case value="5">会员赠送</case>
+                                    <default />未知
+                                </switch>
+                            </td>
+                            <td style="text-align:center; color:#666">{$vo.before_balance}&nbsp;</td>
+                            <td style="text-align:center; color:#666">{$vo.change_balance}&nbsp;</td>
+                            <td style="text-align:center; color:#666">{$vo.after_balance}&nbsp;</td>
+                            <td style="text-align:center;">{$vo.created_time ? date('Y-m-d H:i:s',$vo.created_time):"--"}</td>
+                            <td style="text-align:center; color:#666">{$vo.contentstr}&nbsp;</td>
+
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <!--交易列表-->
+                <div class="pagex"> {$page}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="public:footer"/>
+
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'form'], function() {
+        var laydate = layui.laydate //日期
+            , laypage = layui.laypage //分页
+            ,layer = layui.layer //弹层
+            ,form = layui.form //表单
+            , table = layui.table; //表格
+        //日期时间范围
+        laydate.render({
+            elem: '#createtime'
+            , type: 'datetime'
+            ,theme: 'molv'
+            , range: '|'
+        });
+    });
+
+    $('#export').on('click',function(){
+        window.location.href
+            ="{:url('Admin/SystemLog/exceldownloadAgentBalanceLog',array('agent_phone'=>$Request.param.agent_phone,'user_phone'=>$Request.param.user_phone,'change_type'=>$Request.param.change_type,'createtime'=>$Request.param.createtime))}";
+    });
+</script>
+</body>
+</html>

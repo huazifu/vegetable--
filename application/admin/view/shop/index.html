@@ -1,0 +1,164 @@
+<head>
+    <include file='public:head'>
+</head>
+<div class="row">
+    <div class="col-md-12">
+        <div class="ibox float-e-margins">
+            <!--条件查询-->
+            <div class="ibox-title">
+                <h5>商品列表</h5>
+                <div class="ibox-tools">
+                    <i class="layui-icon" onclick="location.replace(location.href);" title="刷新"
+                       style="cursor:pointer;">ဂ</i>
+                </div>
+            </div>
+            <!--条件查询-->
+            <div class="ibox-content">
+                <form class="layui-form" action="" method="get" autocomplete="off" id="orderform">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <select name="status">
+                                    <option value="">状态</option>
+                                    <option <if condition="$Request.param.status eq '01'">selected</if>
+                                    value="01">显示</option>
+                                    <option <if condition="$Request.param.status eq '00'">selected</if>
+                                    value="00">不显示</option>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" placeholder="商品名称"
+                                       class="layui-input" value="{$Request.param.name}">
+                            </div>
+                           <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="updatedtime" id="updatedtime"
+                                       placeholder="更新时间" value="{$Request.param.updatedtime|urldecode}">
+                            </div>
+
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn"><span
+                                    class="glyphicon glyphicon-search"></span> 搜索
+                            </button>
+                            <!-- <a href="javascript:;" id="export" class="layui-btn layui-btn-danger"><span class="glyphicon glyphicon-export"></span> 导出数据</a> -->
+            				<button type="button" class="layui-btn layui-btn-danger" onclick="Shop_add('添加商品','{:url('Shop/addShop')}',510,420)"><span class="glyphicon glyphicon-plus"></span> 添加商品</button>
+                        </div>
+                    </div>
+                </form>
+                <!--日志列表-->
+                <table class="table table-hover" lay-data="{width:'100%',id:'userData'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'key',width:50,text-align}" style="text-align: center;">ID</th>
+                        <th lay-data="{field:'name', width:150}" style="text-align: center;">商品名称</th>
+                        <th lay-data="{field:'price', width:150}" style="text-align: center;">商品价格</th>
+                        <th lay-data="{field:'status', width:120}" style="text-align: center;">是否显示</th>
+                        <th lay-data="{field:'update_time', width:150}" style="text-align: center;">更新时间</th>
+                        <th lay-data="{field:'created_time', width:150}" style="text-align: center;">添加时间</th>
+                        <th lay-data="{field:'op', width:180}" style="text-align: center;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="list" id="vo">
+                        <tr>
+                            <td style="text-align:center;">
+                                {$vo.id}
+                            </td>
+                            <td style="text-align:center;">
+                                {$vo.name}
+                            </td>
+                            <td style="text-align:center;" >
+                                {$vo.price}
+                            </td>
+                            <td style="text-align:center;">
+                                <div class="layui-form">
+                                    <input type="checkbox" <if condition="$vo.status eq '01'">checked</if> name="status" value="01" data-id="{$vo.id}" lay-skin="switch" lay-filter="switchTest" lay-text="开|关">
+                                </div>
+                            </td>
+                            <td style="text-align:center;">
+                                {$vo.updated_time}
+                            </td>
+                            <td style="text-align:center;">
+                                {$vo.created_time}
+                            </td>
+                            <td style="text-align:center;">
+                                <div class="layui-btn-group">
+                                  <button class="layui-btn layui-btn-small" onclick="Shop_add('编辑商品','{:url('Shop/editShop',['id'=>$vo.id])}',540,420)">编辑</button>
+                                  <button class="layui-btn layui-btn-small" onclick="Shop_del(this,'{:$vo.id}')">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <!--交易列表-->
+                <div class="pagex"> {$page}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="public:footer"/>
+
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'form'], function() {
+        var laydate = layui.laydate //日期
+            , laypage = layui.laypage //分页
+            ,layer = layui.layer //弹层
+            ,form = layui.form //表单
+            , table = layui.table; //表格
+        //日期时间范围
+        laydate.render({
+            elem: '#updatedtime'
+            , type: 'datetime'
+            ,theme: 'molv'
+            , range: '|'
+        });
+        form.on('switch(switchTest)', function(data){
+            var id = $(this).attr('data-id'),
+            isopen = this.checked=='01' ? '01' : '00',
+            title = $(this).attr('data-name');
+            $.ajax({
+                url:"{:url('Shop/editShopStatus')}",
+                type:'post',
+                data:"id="+id+"&isopen="+isopen,
+                success:function(res){
+                    if(res.status){
+                        layer.tips('温馨提示：切换成功', data.othis);
+                    }else{
+                        layer.tips('温馨提示： 切换失败', data.othis);
+                    }
+                }
+            });
+        });
+    });
+     /* 活动-添加 */
+    function Shop_add(title, url, w, h) {
+        x_admin_show_autorefer(title, url, w, h);
+    }
+     /*删除*/
+    function Shop_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+                url:"{:url('Shop/delShop')}",
+                type:'post',
+                data:'id='+id,
+                success:function(res){
+                    if(res.status){
+                        $(obj).parents("tr").remove();
+                        layer.msg('已删除!',{icon:1,time:1000});
+                    }else{
+                        layer.msg(res.msg,{icon:5,time:1000});
+                    }
+                }
+            });
+        });
+    }
+
+
+    $('#export').on('click',function(){
+        window.location.href
+            ="{:url('Admin/SelectNumber/exceldownload',array('term'=>$Request.param.term,'agent_phone'=>$Request.param.agent_phone,'user_phone'=>$Request.param.user_phone,'game_type'=>$Request.param.game_type,'createtime'=>$Request.param.createtime))}";
+    });
+</script>
+</body>
+</html>

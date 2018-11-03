@@ -1,0 +1,72 @@
+<head>
+    <include file="public:head"/>
+</head>
+  <div class="col-md-12">
+    <form class="layui-form" method="post" autocomplete="off" id="menuForm" >
+      <input type="hidden" name="shop_id" value="{$info.id}">
+      <div class="layui-form-item">
+        <label class="layui-form-label">商品名称：</label>
+        <div class="layui-input-block">
+          <input type="text" name="m[name]" autocomplete="off" value="{$info.name}" placeholder="请输入商品名称" class="layui-input" lay-verify="required" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">商品价格：</label>
+        <div class="layui-input-block">
+          <input type="number" name="m[price]" autocomplete="off" value="{$info.price}" placeholder="请输入商品价格" class="layui-input" lay-verify="required" >
+        </div>
+      </div>
+      <div class="layui-form-item">
+          <label class="layui-form-label">是否显示：</label>
+          <div class="layui-input-inline">
+              <input type="radio" name="m[status]" value="01" title="显示" <if condition="'01' eq $info['status']"> checked <else></if> >
+              <input type="radio" name="m[status]" value="00" title="关闭" <if condition="'00' eq $info['status']"> checked <else></if> >
+          </div>
+      </div>
+
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn lineblud" lay-submit lay-filter="addmenu">立即提交</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<include file="public:footer"/>
+<script>
+    layui.use(['layer', 'form','laydate','element','layedit'], function(){
+        var form = layui.form
+            ,laydate = layui.laydate
+            ,$ = layui.jquery
+            ,layer = layui.layer
+            ,element = layui.element
+            ,layedit = layui.layedit; //元素操作
+
+          //监听提交
+          form.on('submit(addmenu)', function(data){
+            $.ajax({
+                url:"{:url('Shop/editShop')}",
+                type:'post',
+                data:$('#menuForm').serialize(),
+                success:function(res){
+                    if(res.status){
+                        layer.alert("操作成功", {icon: 6},function () {
+                            parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                    }else{
+                        layer.msg(res.msg ? res.msg : "操作失败!", {icon: 5},function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                        return false;
+                    }
+                }
+            });
+            return false;
+          });
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<head>
+	<include file='public:head'>
+</head>
+<div class="row">
+    <div class="col-md-12">
+        <div class="ibox float-e-margins">
+            <!--条件查询-->
+            <div class="ibox-title">
+                <h5>系统操作日志</h5>
+                <div class="ibox-tools">
+                    <i class="layui-icon" onclick="location.replace(location.href);" title="刷新"
+                       style="cursor:pointer;">ဂ</i>
+                </div>
+            </div>
+            <!--条件查询-->
+            <div class="ibox-content">
+                <form class="layui-form" action="" method="get" autocomplete="off" id="orderform">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <select name="admin_user_id">
+                                    <option value="">管理员</option>
+                                    <volist name="admins" id="vo">
+                                        <option <if condition="$Request.param.admin_user_id eq $vo.id">selected</if>
+                                        value="{$vo.id}">{$vo.nikename}</option>
+                                    </volist>
+                                </select>
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" name="edited_user" autocomplete="off" placeholder="请输入用户昵称"
+                                       class="layui-input" value="{$Request.param.edited_user}">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="createtime" id="createtime"
+                                       placeholder="起始时间" value="{$Request.param.createtime|urldecode}">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn"><span
+                                    class="glyphicon glyphicon-search"></span> 搜索
+                            </button>
+                            <a href="javascript:;" id="export" class="layui-btn layui-btn-danger"><span class="glyphicon glyphicon-export"></span> 导出数据</a>
+                        </div>
+                    </div>
+                </form>
+
+                <!--日志列表-->
+                <table class="layui-table" lay-data="{width:'100%',id:'userData'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'key',width:60}"></th>
+                        <th lay-data="{field:'user_name', width:100,style:'color:#060;'}">管理员</th>
+                        <th lay-data="{field:'edited_user_name', width:200,style:'color:#060;'}">用户昵称</th>
+                        <th lay-data="{field:'edited_user_phone', width:150,style:'color:#060;'}">用户手机号码</th>
+                        <th lay-data="{field:'desc', width:550}">详情</th>
+                        <th lay-data="{field:'created_time', width:180}">操作时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <volist name="log_datas" id="vo">
+                        <tr>
+                            <td>{$vo.id}</td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.user_name}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.edited_user_name ? $vo.edited_user_name:"--"}
+                            </td>
+                            <td style="text-align:center; color:#090;">
+                                {$vo.edited_user_phone ? $vo.edited_user_phone:"--"}
+                            </td>
+                            <td style="text-align:center; color:#666">{$vo.desc}&nbsp;</td>
+                            <td style="text-align:center;">{$vo.created_time}</td>
+                        </tr>
+                    </volist>
+                    </tbody>
+                </table>
+                <!--交易列表-->
+                <div class="pagex"> {$page}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<include file="public:footer"/>
+
+<script>
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'form'], function() {
+        var laydate = layui.laydate //日期
+            , laypage = layui.laypage //分页
+            ,layer = layui.layer //弹层
+            ,form = layui.form //表单
+            , table = layui.table; //表格
+        //日期时间范围
+        laydate.render({
+            elem: '#createtime'
+            , type: 'datetime'
+            ,theme: 'molv'
+            , range: '|'
+        });
+    });
+
+    $('#export').on('click',function(){
+        window.location.href
+            ="{:url('Admin/SystemLog/exceldownload',array('memberid'=>$Request.param.memberid,'createtime'=>$Request.param.createtime))}";
+    });
+</script>
+</body>
+</html>

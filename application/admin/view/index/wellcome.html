@@ -1,0 +1,63 @@
+<head>
+    <include file="public:head"/>
+    <link href="__STATIC__/admin/layui/css/layui.css" rel="stylesheet">
+    <script src="__STATIC__/admin/layui/layui.js"></script>
+</head>
+<div class="layui-elem-quote" style="margin-top: 20px;">
+    系统基本信息
+</div>
+
+<div class="layui-form">
+<table class="layui-table table-striped table-hover" lay-skin="line">
+      <colgroup>
+    <col width="18%">
+    <col width="32%"> 
+    <col width="18%">
+    <col width="32%">
+  </colgroup>
+    <tr>
+        <td >PHP 版本：</td>
+        <td><strong> <php>echo PHP_VERSION;</php> </strong></td>
+        <td >Base版本：</td>
+        <td><strong> v<php>echo THINK_VERSION;</php> </strong></td>
+    </tr>
+    <tr>
+        <td>服务器操作系统：</td>
+        <td><strong><php>echo PHP_OS;</php></strong></td>
+        <td>系统语言：</td>
+        <td><strong>zh_cn</strong></td>
+    </tr>
+    <tr>
+        <td>调试模式：</td>
+        <td><strong> <php>if(config('APP_DEBUG'))echo '是';else echo '否';</php> </strong></td>
+        <td>当前IP：</td>
+        <td><strong> <php>echo get_client_ip();</php> </strong></td>
+    </tr>
+    <tr>
+        <td>内存统计支持：</td>
+        <td><strong> <php>echo ( ! function_exists('memory_get_usage')) ? '0' : round(memory_get_usage()/1024/1024, 2).'MB';</php> </strong></td>
+        <td>编码：</td>
+        <td><strong>UTF-8</strong></td>
+    </tr>
+     <tr>
+        <td>PHP 版本：</td>
+        <td><strong><php>echo PHP_VERSION;</php></strong></td>
+        <td>缓存目录：</td>
+        <td><strong> <php>echo TEMP_PATH;</php> </strong></td>
+        
+    </tr>
+
+    <tr>
+        <td>文件上传限制：</td>
+        <td><strong>2M</strong></td>
+        <td>GD 库支持：</td>
+        <td><strong> <php>if(function_exists('imagecreate')){echo '是';}else{echo '否';}</php> </strong></td>
+    </tr>
+
+</table>
+</div>
+
+  <div class="layui-footer" align="center" style="margin-top: 20px;">
+    <!-- 底部固定区域 -->
+    © <php>echo $_SERVER['SERVER_NAME']</php> 版权所有
+  </div>
